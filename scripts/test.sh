@@ -62,7 +62,11 @@ fi
 
 node --check "$ROOT/runtime/start.mjs"
 node --check "$ROOT/runtime/compose.mjs"
-if node "$ROOT/runtime/start.mjs" 2>&1 | grep -q 'required file is missing'; then :; else
+set +e
+PREFLIGHT_OUTPUT=$(node "$ROOT/runtime/start.mjs" 2>&1)
+PREFLIGHT_STATUS=$?
+set -e
+if [[ "$PREFLIGHT_STATUS" -ne 2 || "$PREFLIGHT_OUTPUT" != *"required file is missing"* ]]; then
   echo "Gateway preflight did not fail safely without a composed supergraph." >&2
   exit 1
 fi
