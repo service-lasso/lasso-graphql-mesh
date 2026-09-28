@@ -19,7 +19,7 @@ path = pathlib.Path('service.json')
 print(json.loads(path.read_text())['id'])
 PY
 )
-if [[ "$SERVICE_ID" != "echo-service" ]]; then
+if [[ "$SERVICE_ID" != "graphql-mesh" ]]; then
   echo "service.json id mismatch" >&2
   exit 1
 fi
@@ -55,23 +55,20 @@ path = pathlib.Path('verify/service-harness.json')
 print(json.loads(path.read_text())['serviceId'])
 PY
 )
-if [[ "$CONTRACT_ID" != "echo-service" ]]; then
+if [[ "$CONTRACT_ID" != "graphql-mesh" ]]; then
   echo "service-harness.json serviceId mismatch" >&2
   exit 1
 fi
 
-OS_NAME=$(uname -s)
-case "$OS_NAME" in
-  Linux*) RUNTIME="$ROOT/runtime/linux/echo-service.sh" ;;
-  Darwin*) RUNTIME="$ROOT/runtime/darwin/echo-service.sh" ;;
-  *) echo "Unsupported OS for test.sh: $OS_NAME" >&2; exit 1 ;;
-esac
-
-chmod +x "$RUNTIME"
-OUTPUT=$(ECHO_MESSAGE='pipeline test message' "$RUNTIME")
-if [[ "$OUTPUT" != *"pipeline test message"* ]]; then
-  echo "Echo runtime output mismatch" >&2
+node --check "$ROOT/runtime/start.mjs"
+node --check "$ROOT/runtime/compose.mjs"
+set +e
+PREFLIGHT_OUTPUT=$(node "$ROOT/runtime/start.mjs" 2>&1)
+PREFLIGHT_STATUS=$?
+set -e
+if [[ "$PREFLIGHT_STATUS" -ne 2 || "$PREFLIGHT_OUTPUT" != *"required file is missing"* ]]; then
+  echo "Gateway preflight did not fail safely without a composed supergraph." >&2
   exit 1
 fi
 
-echo "Template tests passed ($OS_NAME)"
+echo "GraphQL Mesh package tests passed"

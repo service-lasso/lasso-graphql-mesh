@@ -1,20 +1,23 @@
-# Service Lasso service template
+# GraphQL Mesh for Service Lasso
 
-Turn an existing program into a service that Lasso can install, configure, start, check, and package.
+This package pins GraphQL Mesh Compose and Hive Gateway into a Service Lasso
+release artifact. Mesh v1 composes a supergraph; Hive Gateway serves it.
 
-**[Create your service from this template](https://github.com/service-lasso/service-lasso/blob/develop/docs/components/service-template/bootstrap-new-service-repo.md)**
+## Operator flow
 
-Use GitHub's **Use this template** button, rename the sample, replace its runtime payload, and describe it in `service.json`.
+1. Copy `config/mesh.config.mjs.example` outside source control and declare the
+   approved subgraphs and credentials through environment variables.
+2. Run `node runtime/compose.mjs` to generate `runtime/supergraph.graphql`.
+3. Start through Service Lasso. The package refuses to start without the composed
+   supergraph, avoiding a misleading healthy process.
 
-Validate your first package:
+## Validate
 
 ```powershell
-pwsh -NoLogo -NoProfile -File ./scripts/package.ps1
 pwsh -NoLogo -NoProfile -File ./scripts/test.ps1
+pwsh -NoLogo -NoProfile -File ./scripts/package.ps1
 ```
 
-[Write the manifest](https://github.com/service-lasso/service-lasso/blob/develop/docs/components/service-template/service-json-reference.md) · [Package it](https://github.com/service-lasso/service-lasso/blob/develop/docs/components/service-template/packaging.md) · [Validate it](https://github.com/service-lasso/service-lasso/blob/develop/docs/components/service-template/validation.md)
-
-Want an application with ready-made dependencies? Start with [PostgreSQL and a small app](https://github.com/service-lasso/service-lasso/blob/develop/docs/first-useful-service.md) or an [app template](https://github.com/service-lasso/service-lasso/blob/develop/docs/reference-apps.md).
-
-Reader guides live in Service Lasso. [Maintainer context](docs/maintainer-context.md) and implementation specs stay with the code.
+No release is published by this development work. The manifest points at this
+repository's future release assets; consumers must use a real tagged release and
+checksum before treating acquisition as qualified.
