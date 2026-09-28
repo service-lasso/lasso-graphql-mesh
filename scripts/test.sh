@@ -71,4 +71,4 @@ if [[ "$PREFLIGHT_STATUS" -ne 2 || "$PREFLIGHT_OUTPUT" != *"required file is mis
   exit 1
 fi
 
-echo "Template tests passed ($OS_NAME)"
+echo "GraphQL Mesh package tests passed"
