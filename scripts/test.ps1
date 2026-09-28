@@ -63,3 +63,4 @@ $result = & node (Join-Path $root 'runtime\start.mjs') 2>&1
 if ($LASTEXITCODE -ne 2 -or (($result | Out-String) -notmatch 'required file is missing')) { throw 'Gateway preflight did not fail safely without a composed supergraph.' }
 
 Write-Host 'Template tests passed (Windows)'
+exit 0
