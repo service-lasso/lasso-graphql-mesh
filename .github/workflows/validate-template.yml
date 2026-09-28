@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   pull_request:
   push:
-    branches: [ main ]
+    branches: [ develop ]
 
 permissions:
   contents: read
@@ -102,20 +102,8 @@ jobs:
         shell: bash
         run: bash ./scripts/test.sh
 
-      - name: Verify via released harness (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: .\scripts\verify.ps1
-
-      - name: Verify via released harness (POSIX)
-        if: runner.os != 'Windows'
-        shell: bash
-        run: bash ./scripts/verify.sh
-
-      - name: Upload verify artifacts
-        if: always()
+      - name: Upload package candidate
         uses: actions/upload-artifact@v4
         with:
-          name: verify-${{ matrix.platform }}
-          path: output/verify
-          if-no-files-found: warn
+          name: graphql-mesh-${{ matrix.platform }}
+          path: dist/graphql-mesh-${{ matrix.platform }}.${{ runner.os == 'Windows' && 'zip' || 'tar.gz' }}

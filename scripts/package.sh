@@ -9,17 +9,18 @@ case "$OS_NAME" in
   Darwin*) PLATFORM="darwin" ;;
   *) echo "Unsupported OS for package.sh: $OS_NAME" >&2; exit 1 ;;
 esac
-STAGING="$DIST/echo-service-$PLATFORM"
-TAR_PATH="$DIST/echo-service-$PLATFORM.tar.gz"
+STAGING="$DIST/graphql-mesh-$PLATFORM"
+TAR_PATH="$DIST/graphql-mesh-$PLATFORM.tar.gz"
 
 mkdir -p "$DIST"
 rm -rf "$STAGING"
 mkdir -p "$STAGING"
 
-cp -R "$ROOT/runtime/$PLATFORM" "$STAGING/runtime"
+cp -R "$ROOT/runtime" "$STAGING/runtime"
 cp -R "$ROOT/config" "$STAGING/config"
-
-chmod +x "$STAGING/runtime/echo-service.sh" 2>/dev/null || true
+cp "$ROOT/package.json" "$STAGING/runtime/package.json"
+cp "$ROOT/package-lock.json" "$STAGING/runtime/package-lock.json"
+npm ci --omit=dev --ignore-scripts --prefix "$STAGING/runtime"
 
 rm -f "$TAR_PATH"
 tar -czf "$TAR_PATH" -C "$STAGING" .

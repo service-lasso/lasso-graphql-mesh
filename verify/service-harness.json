@@ -1,7 +1,7 @@
 {
-  "serviceId": "echo-service",
+  "serviceId": "graphql-mesh",
   "artifact": {
-    "path": "dist/echo-service-win32.zip",
+    "path": "dist/graphql-mesh-win32.zip",
     "kind": "archive"
   },
   "dependencies": [],

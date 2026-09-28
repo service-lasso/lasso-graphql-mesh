@@ -5,7 +5,11 @@ $root = Split-Path -Parent $PSScriptRoot
 $required = @(
   (Join-Path $root 'service.json'),
   (Join-Path $root 'verify\service-harness.json'),
-  (Join-Path $root 'runtime\win32\echo-service.ps1')
+  (Join-Path $root 'runtime\start.mjs'),
+  (Join-Path $root 'runtime\compose.mjs'),
+  (Join-Path $root 'config\gateway.config.mjs'),
+  (Join-Path $root 'config\mesh.config.mjs.example'),
+  (Join-Path $root 'package-lock.json')
 )
 
 foreach ($path in $required) {
@@ -15,7 +19,7 @@ foreach ($path in $required) {
 }
 
 $service = Get-Content (Join-Path $root 'service.json') -Raw | ConvertFrom-Json
-if ($service.id -ne 'echo-service') {
+if ($service.id -ne 'graphql-mesh') {
   throw 'service.json id mismatch'
 }
 
@@ -46,14 +50,16 @@ foreach ($manifestPath in $manifestPaths) {
 }
 
 $contract = Get-Content (Join-Path $root 'verify\service-harness.json') -Raw | ConvertFrom-Json
-if ($contract.serviceId -ne 'echo-service') {
+if ($contract.serviceId -ne 'graphql-mesh') {
   throw 'service-harness.json serviceId mismatch'
 }
 
-$env:ECHO_MESSAGE = 'pipeline test message'
-$output = & (Join-Path $root 'runtime\win32\echo-service.ps1') | Out-String
-if ($output -notmatch 'pipeline test message') {
-  throw 'Echo runtime output mismatch'
+foreach ($script in @('runtime\start.mjs', 'runtime\compose.mjs')) {
+  & node --check (Join-Path $root $script)
+  if ($LASTEXITCODE -ne 0) { throw "Node syntax check failed: $script" }
 }
+
+$result = & node (Join-Path $root 'runtime\start.mjs') 2>&1
+if ($LASTEXITCODE -ne 2 -or (($result | Out-String) -notmatch 'required file is missing')) { throw 'Gateway preflight did not fail safely without a composed supergraph.' }
 
 Write-Host 'Template tests passed (Windows)'

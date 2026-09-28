@@ -1,14 +1,14 @@
 {
-  "id": "echo-service",
-  "name": "Echo Service",
-  "description": "Minimal sample service used to prove the service-template contract.",
+  "id": "graphql-mesh",
+  "name": "GraphQL Mesh Gateway",
+  "description": "Pinned GraphQL Mesh Compose and Hive Gateway runtime for a locally composed supergraph.",
   "enabled": true,
   "version": "0.1.0",
   "logoutput": true,
   "icon": [
     {
       "provider": "lucide",
-      "name": "terminal"
+      "name": "git-merge"
     }
   ],
   "servicetype": 50,
@@ -16,7 +16,7 @@
   "logo": [],
   "logs": {
     "default": {
-      "path": "logs/echo-service.log"
+      "path": "logs/graphql-mesh.log"
     }
   },
   "meta": {
@@ -28,82 +28,87 @@
     "license": "Apache-2.0",
     "repository": {
       "type": "git",
-      "url": "https://github.com/service-lasso/service-template.git"
+      "url": "https://github.com/service-lasso/lasso-graphql-mesh.git"
     },
-    "websiteUrl": "https://github.com/service-lasso/service-template",
-    "documentationUrl": "https://github.com/service-lasso/service-template/blob/main/README.md",
-    "issuesUrl": "https://github.com/service-lasso/service-template/issues",
+    "websiteUrl": "https://the-guild.dev/graphql/mesh",
+    "documentationUrl": "https://github.com/service-lasso/lasso-graphql-mesh/blob/develop/README.md",
+    "issuesUrl": "https://github.com/service-lasso/lasso-graphql-mesh/issues",
     "support": {
-      "issuesUrl": "https://github.com/service-lasso/service-template/issues"
+      "issuesUrl": "https://github.com/service-lasso/lasso-graphql-mesh/issues"
     },
     "links": {
-      "repository": "https://github.com/service-lasso/service-template",
-      "issues": "https://github.com/service-lasso/service-template/issues",
-      "documentation": "https://github.com/service-lasso/service-template/blob/main/README.md"
+      "repository": "https://github.com/service-lasso/lasso-graphql-mesh",
+      "issues": "https://github.com/service-lasso/lasso-graphql-mesh/issues",
+      "documentation": "https://github.com/service-lasso/lasso-graphql-mesh/blob/develop/README.md"
     },
     "tags": [
       "service-lasso",
-      "template",
-      "example-service"
+      "graphql",
+      "graphql-mesh",
+      "hive-gateway"
     ]
   },
   "artifact": {
     "kind": "archive",
     "source": {
       "type": "github-release",
-      "repo": "service-lasso/service-template",
+      "repo": "service-lasso/lasso-graphql-mesh",
       "channel": "latest"
     },
     "platforms": {
       "win32": {
-        "assetName": "echo-service-win32.zip",
+        "assetName": "graphql-mesh-win32.zip",
         "archiveType": "zip",
-        "command": "./echo-service.exe",
-        "args": []
+        "command": "./runtime/start.mjs",
+        "args": [],
+        "checksum": { "algorithm": "sha256", "assetName": "SHA256SUMS.txt" }
       },
       "darwin": {
-        "assetName": "echo-service-darwin.tar.gz",
+        "assetName": "graphql-mesh-darwin.tar.gz",
         "archiveType": "tar.gz",
-        "command": "./echo-service",
-        "args": []
+        "command": "./runtime/start.mjs",
+        "args": [],
+        "checksum": { "algorithm": "sha256", "assetName": "SHA256SUMS.txt" }
       },
       "linux": {
-        "assetName": "echo-service-linux.tar.gz",
+        "assetName": "graphql-mesh-linux.tar.gz",
         "archiveType": "tar.gz",
-        "command": "./echo-service",
-        "args": []
+        "command": "./runtime/start.mjs",
+        "args": [],
+        "checksum": { "algorithm": "sha256", "assetName": "SHA256SUMS.txt" }
       },
       "default": {
-        "assetName": "echo-service-win32.zip",
+        "assetName": "graphql-mesh-win32.zip",
         "archiveType": "zip",
-        "command": "./echo-service.exe",
-        "args": []
+        "command": "./runtime/start.mjs",
+        "args": [],
+        "checksum": { "algorithm": "sha256", "assetName": "SHA256SUMS.txt" }
       }
     }
   },
   "actions": {
     "install": {
-      "description": "Acquire or unpack the packaged echo-service runtime artifact.",
+      "description": "Acquire the pinned GraphQL Mesh Compose and Hive Gateway artifact.",
       "mode": "converge-install",
       "idempotent": true
     },
     "config": {
-      "description": "Materialize deployment-local echo-service config and env values.",
+      "description": "Prepare local GraphQL Mesh configuration without embedding subgraph credentials.",
       "mode": "converge-config",
       "idempotent": true
     },
     "update": {
-      "description": "Apply a newer release artifact and reconcile update-time changes before restart.",
+      "description": "Apply a newer release artifact and reconcile configuration before restart.",
       "mode": "converge-update",
       "idempotent": true
     },
     "start": {
-      "description": "Start the sample echo service.",
+      "description": "Start Hive Gateway with an already composed local supergraph.",
       "mode": "runtime-start",
       "idempotent": true
     },
     "stop": {
-      "description": "Stop the sample echo service gracefully.",
+      "description": "Stop the GraphQL Mesh gateway gracefully.",
       "mode": "runtime-stop",
       "idempotent": true
     },
@@ -120,13 +125,18 @@
   },
   "execconfig": {
     "serviceorder": 100,
-    "serviceport": 0,
-    "execcwd": "runtime",
-    "executable": "echo-service",
+    "serviceport": 4000,
+    "execcwd": ".",
+    "executable": "node",
+    "args": [
+      "runtime/start.mjs"
+    ],
     "env": {
-      "ECHO_MESSAGE": "hello from service-template"
+      "GRAPHQL_MESH_HOST": "127.0.0.1",
+      "GRAPHQL_MESH_PORT": "4000",
+      "GRAPHQL_MESH_ENDPOINT": "/graphql"
     },
-    "depend_on": []
+    "depend_on": ["@node"]
   },
   "healthchecks": [
     {

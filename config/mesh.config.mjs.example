@@ -1,0 +1,14 @@
+import { defineConfig, loadGraphQLHTTPSubgraph } from "@graphql-mesh/compose-cli";
+
+const endpoint = process.env.EXAMPLE_SUBGRAPH_URL;
+if (!endpoint) {
+  throw new Error("EXAMPLE_SUBGRAPH_URL must identify a real GraphQL subgraph before composition.");
+}
+
+export const composeConfig = defineConfig({
+  subgraphs: [
+    {
+      sourceHandler: loadGraphQLHTTPSubgraph("example", { endpoint }),
+    },
+  ],
+});
